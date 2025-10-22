@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # FastProxy reverse proxy
+  fastproxy:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./config.yaml:/app/config.yaml
+      - ./audit:/app/audit
+    environment:
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+
+  # Example backend service 1
+  backend1:
+    image: kennethreitz/httpbin
+    ports:
+      - "8001:80"
+    restart: unless-stopped
+
+  # Example backend service 2
+  backend2:
+    image: kennethreitz/httpbin
+    ports:
+      - "8002:80"
+    restart: unless-stopped
+
+  # Example backend service 3
+  backend3:
+    image: kennethreitz/httpbin
+    ports:
+      - "8003:80"
+    restart: unless-stopped
+
