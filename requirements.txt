@@ -1,4 +1,4 @@
-# LiteProxy (FastProxy) - Core Requirements
+# FastProxy - Core Requirements
 # Production dependencies
 
 # Core dependencies

@@ -143,7 +143,7 @@ cython_debug/
 *~
 .DS_Store
 
-# LiteProxy specific
+# FastProxy specific
 audit/audit.db
 audit/audit.db-wal
 audit/audit.db-shm

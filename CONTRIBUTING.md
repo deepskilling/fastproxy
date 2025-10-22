@@ -1,6 +1,6 @@
-# Contributing to LiteProxy
+# Contributing to FastProxy
 
-First off, thank you for considering contributing to LiteProxy! It's people like you that make LiteProxy such a great tool.
+First off, thank you for considering contributing to FastProxy! It's people like you that make FastProxy such a great tool.
 
 ## 🎯 Code of Conduct
 
@@ -242,7 +242,7 @@ Brief description of changes
 ## 🎨 Project Structure
 
 ```
-liteproxy/
+fastproxy/
 ├── proxy/          # Core proxy logic
 ├── audit/          # Audit logging
 ├── admin/          # Admin endpoints
@@ -294,7 +294,7 @@ import pdb; pdb.set_trace()  # Add breakpoint
 
 ## 🙏 Thank You!
 
-Your contributions make LiteProxy better for everyone. We appreciate your time and effort!
+Your contributions make FastProxy better for everyone. We appreciate your time and effort!
 
 ---
 

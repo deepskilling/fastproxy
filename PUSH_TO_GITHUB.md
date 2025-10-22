@@ -1,4 +1,4 @@
-# 🚀 Push LiteProxy to GitHub - Complete Guide
+# 🚀 Push FastProxy to GitHub - Complete Guide
 
 ## ✅ Pre-Push Checklist
 
@@ -56,7 +56,7 @@ git commit -m "feat: Add professional branding, CI/CD, and documentation
 - Add .flake8 configuration
 - Add REPOSITORY_INFO.md with branding details
 - Update requirements.txt with dev dependencies
-- Prepare for public release as 'liteproxy'
+- Prepare for public release as 'fastproxy'
 
 All features tested and production-ready."
 ```
@@ -75,7 +75,7 @@ git push -u origin main
 
 1. Go to: https://github.com/new
 2. **Owner**: Select `deepskilling`
-3. **Repository name**: `liteproxy` (recommended) or `fastproxy`
+3. **Repository name**: `fastproxy`
 4. **Description**: 
    ```
    ⚡ Lightning-fast async reverse proxy built with FastAPI. Python-based Nginx alternative with dynamic routing, rate limiting, and audit logging. Perfect for microservices!
@@ -86,7 +86,7 @@ git push -u origin main
 
 8. Then push existing repository:
 ```bash
-git remote set-url origin https://github.com/deepskilling/liteproxy.git
+git remote set-url origin https://github.com/deepskilling/fastproxy.git
 git push -u origin main
 ```
 
@@ -154,7 +154,7 @@ Upload a 1280x640px image with LiteProxy branding.
 ### 1. Check Repository
 ```bash
 # Visit your repository
-https://github.com/deepskilling/liteproxy
+https://github.com/deepskilling/fastproxy
 ```
 
 ### 2. Verify Badges
@@ -181,7 +181,7 @@ Or simply: **Push any commit** and CI will run automatically.
 
 ### 4. Check Actions Tab
 ```
-https://github.com/deepskilling/liteproxy/actions
+https://github.com/deepskilling/fastproxy/actions
 ```
 You should see the Python CI workflow running.
 
@@ -240,7 +240,7 @@ ssh-keygen -t ed25519 -C "your_email@example.com"
 # Add to GitHub: Settings → SSH and GPG keys → New SSH key
 
 # Change remote to SSH
-git remote set-url origin git@github.com:deepskilling/liteproxy.git
+git remote set-url origin git@github.com:deepskilling/fastproxy.git
 git push -u origin main
 ```
 
@@ -268,7 +268,7 @@ After successfully pushing:
 ## 🎉 Success Indicators
 
 Your repository is successfully public when:
-- ✅ Visible at https://github.com/deepskilling/liteproxy
+- ✅ Visible at https://github.com/deepskilling/fastproxy
 - ✅ README displays correctly with badges
 - ✅ LICENSE shows in repository
 - ✅ GitHub Actions workflow is running
@@ -287,5 +287,5 @@ If you encounter issues:
 
 ---
 
-**Ready to make LiteProxy public? Run the commands above!** 🚀
+**Ready to make FastProxy public? Run the commands above!** 🚀
 

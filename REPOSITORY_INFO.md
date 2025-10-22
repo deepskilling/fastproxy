@@ -1,7 +1,7 @@
 # 📦 Repository Information
 
 ## Recommended Repository Name
-**`liteproxy`**
+**`fastproxy`**
 
 ## GitHub Description
 ```
@@ -115,7 +115,7 @@ Create a social preview image (1280x640px) with:
 "Lightning-fast async reverse proxy built with FastAPI. Python alternative to Nginx with dynamic routing, rate limiting & audit logging."
 
 ### Medium Description (< 350 chars)
-"LiteProxy is a production-ready, async reverse proxy server built with FastAPI. It provides dynamic routing, intelligent rate limiting, comprehensive audit logging, and hot-reload configuration—all in a simple, developer-friendly Python package. Perfect for microservices, API gateways, and development environments."
+"FastProxy is a production-ready, async reverse proxy server built with FastAPI. It provides dynamic routing, intelligent rate limiting, comprehensive audit logging, and hot-reload configuration—all in a simple, developer-friendly Python package. Perfect for microservices, API gateways, and development environments."
 
 ### Key Selling Points
 1. 🚀 **Fast**: Built on FastAPI and httpx for maximum performance
@@ -138,7 +138,7 @@ Create a social preview image (1280x640px) with:
 
 ### Content Ideas
 - Blog post: "Building a Reverse Proxy with FastAPI"
-- Tutorial: "Replacing Nginx with LiteProxy"
-- Video: "LiteProxy Quick Start Guide"
-- Comparison: "LiteProxy vs Nginx vs Traefik"
+- Tutorial: "Replacing Nginx with FastProxy"
+- Video: "FastProxy Quick Start Guide"
+- Comparison: "FastProxy vs Nginx vs Traefik"
 

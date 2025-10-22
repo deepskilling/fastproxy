@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚀 LiteProxy
+# 🚀 FastProxy
 
 ### Lightning-Fast Async Reverse Proxy Built with FastAPI
 
@@ -18,9 +18,9 @@
 
 ---
 
-## 🎯 What is LiteProxy?
+## 🎯 What is FastProxy?
 
-**LiteProxy** (formerly FastProxy) is a lightweight, high-performance reverse proxy server built entirely in Python using FastAPI. It provides dynamic routing, intelligent rate limiting, comprehensive audit logging, and hot-reload configuration—all in a simple, developer-friendly package.
+**FastProxy** is a lightweight, high-performance reverse proxy server built entirely in Python using FastAPI. It provides dynamic routing, intelligent rate limiting, comprehensive audit logging, and hot-reload configuration—all in a simple, developer-friendly package.
 
 **Perfect for:**
 - 🏗️ **Microservices Architecture** - Route requests across multiple backend services
@@ -111,11 +111,11 @@ uvicorn main:app --reload
 ### Option 3: Docker Compose
 
 ```bash
-# Start LiteProxy and example backend services
+# Start FastProxy and example backend services
 docker-compose up -d
 
 # View logs
-docker-compose logs -f liteproxy
+docker-compose logs -f fastproxy
 
 # Stop all services
 docker-compose down
@@ -274,7 +274,7 @@ pytest -v -s
 ## 🏗️ Project Structure
 
 ```
-liteproxy/
+fastproxy/
 ├── main.py                    # FastAPI application entry point
 ├── config.yaml                # Route and proxy configuration
 ├── requirements.txt           # Python dependencies
@@ -330,15 +330,15 @@ gunicorn main:app \
 
 ```bash
 # Build image
-docker build -t liteproxy:latest .
+docker build -t fastproxy:latest .
 
 # Run container
 docker run -d \
   -p 8000:8000 \
   -v $(pwd)/config.yaml:/app/config.yaml \
   -v $(pwd)/audit:/app/audit \
-  --name liteproxy \
-  liteproxy:latest
+  --name fastproxy \
+  fastproxy:latest
 ```
 
 ---
@@ -464,7 +464,7 @@ Built with these amazing technologies:
 
 **Made with ❤️ by [Deepskilling](https://github.com/deepskilling)**
 
-*LiteProxy - Fast, Simple, Powerful*
+*FastProxy - Fast, Simple, Powerful*
 
 [![Star on GitHub](https://img.shields.io/github/stars/deepskilling/fastproxy?style=social)](https://github.com/deepskilling/fastproxy)
 
