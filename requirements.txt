@@ -8,6 +8,10 @@ httpx==0.27.2
 pydantic==2.9.2
 pyyaml==6.0.2
 
+# Security dependencies
+python-jose[cryptography]==3.3.0  # JWT authentication
+cryptography==41.0.7              # SSL/TLS and encryption
+
 # Optional dependencies for production
 python-multipart==0.0.12
 

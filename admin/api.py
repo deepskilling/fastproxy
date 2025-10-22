@@ -7,6 +7,7 @@ from typing import List, Dict
 
 from security.auth import require_admin
 from security.validators import validate_ip_address
+from security.rate_limiter_admin import admin_rate_limiter
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,12 @@ async def reload_config(
     
     Reloads routing configuration without restarting the server.
     Validates configuration before applying.
+    
+    Rate Limited: 5 attempts per 5 minutes per IP
     """
+    # Apply rate limiting
+    admin_rate_limiter.check_rate_limit(request, endpoint="admin_reload")
+    
     client_ip = request.client.host if request.client else "unknown"
     
     try:
@@ -144,7 +150,12 @@ async def clear_rate_limit(
     Clear rate limit for a specific IP address
     
     Removes all rate limit history for the specified IP.
+    
+    Rate Limited: 5 attempts per 5 minutes per IP
     """
+    # Apply rate limiting
+    admin_rate_limiter.check_rate_limit(request, endpoint="admin_ratelimit_clear")
+    
     # Validate IP format
     validate_ip_address(ip)
     

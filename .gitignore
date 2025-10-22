@@ -149,9 +149,20 @@ cython_debug/
 audit/audit.db
 audit/audit.db-wal
 audit/audit.db-shm
+security/api_keys.db
+security/api_keys.db-wal
+security/api_keys.db-shm
 *.db
 *.db-wal
 *.db-shm
+
+# SSL/TLS certificates and keys (NEVER commit these!)
+*.pem
+*.key
+*.crt
+*.csr
+certs/
+letsencrypt/
 
 # Internal documentation (not for public)
 docs/MVP_Features.md

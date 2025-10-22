@@ -7,6 +7,7 @@ from typing import Optional, List
 from audit.models import AuditEntry
 from security.auth import require_admin
 from security.validators import validate_event_type, validate_ip_address
+from security.rate_limiter_admin import admin_rate_limiter
 
 router = APIRouter()
 
@@ -27,7 +28,12 @@ async def get_audit_logs(
     - **offset**: Number of records to skip
     - **event_type**: Filter by event type ('request' or 'admin_action')
     - **client_ip**: Filter by client IP address
+    
+    Rate Limited: 5 attempts per 5 minutes per IP
     """
+    # Apply rate limiting
+    admin_rate_limiter.check_rate_limit(request, endpoint="audit_logs")
+    
     # Validate inputs
     if event_type:
         event_type = validate_event_type(event_type)

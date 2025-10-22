@@ -17,6 +17,7 @@ from audit.middleware import AuditMiddleware
 from audit.logger import AuditLogger
 from audit.api import router as audit_router
 from admin.api import router as admin_router
+from auth.api import router as auth_router
 from security.middleware import SecurityHeadersMiddleware, RequestBodySizeLimitMiddleware
 
 # Configure logging
@@ -89,6 +90,7 @@ app.add_middleware(RequestLoggingMiddleware)        # Log requests
 app.add_middleware(AuditMiddleware)                 # Audit logging
 
 # Include routers
+app.include_router(auth_router, tags=["authentication"])
 app.include_router(admin_router, prefix="/admin", tags=["admin"])
 app.include_router(audit_router, prefix="/audit", tags=["audit"])
 
@@ -139,11 +141,31 @@ async def proxy_handler(request: Request, path: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
-    )
+    from ssl_config import create_ssl_context, is_ssl_enabled, get_ssl_port
+    
+    # Check if SSL is configured
+    ssl_context = create_ssl_context()
+    
+    if ssl_context:
+        # Run with HTTPS
+        port = get_ssl_port()
+        logger.info(f"🔒 Starting FastProxy with HTTPS on port {port}")
+        uvicorn.run(
+            "main:app",
+            host="0.0.0.0",
+            port=port,
+            ssl_context=ssl_context,
+            reload=False,  # Disable reload with SSL
+            log_level="info"
+        )
+    else:
+        # Run with HTTP (development mode)
+        logger.warning("⚠️  Running in HTTP mode (not secure for production)")
+        uvicorn.run(
+            "main:app",
+            host="0.0.0.0",
+            port=8000,
+            reload=True,
+            log_level="info"
+        )
 

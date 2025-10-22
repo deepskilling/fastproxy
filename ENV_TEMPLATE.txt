@@ -1,0 +1,65 @@
+# FastProxy Environment Variables Template
+# Copy this file to .env and configure for your environment
+
+# ============================================================================
+# AUTHENTICATION
+# ============================================================================
+
+# HTTP Basic Auth for Admin/Audit Endpoints
+FASTPROXY_ADMIN_USERNAME=admin
+FASTPROXY_ADMIN_PASSWORD=change_this_password_immediately
+
+# JWT Authentication (REQUIRED for production!)
+# Generate a secure secret: python -c "import secrets; print(secrets.token_urlsafe(32))"
+FASTPROXY_JWT_SECRET=CHANGE_THIS_SECRET_KEY_IN_PRODUCTION
+
+# ============================================================================
+# SSL/TLS CONFIGURATION
+# ============================================================================
+
+# SSL Certificate and Key Paths (for HTTPS)
+# If not set, server runs in HTTP mode
+# FASTPROXY_SSL_CERT=/path/to/cert.pem
+# FASTPROXY_SSL_KEY=/path/to/key.pem
+# FASTPROXY_SSL_CA_BUNDLE=/path/to/ca-bundle.pem
+
+# SSL Port (default: 8443)
+# FASTPROXY_SSL_PORT=8443
+
+# ============================================================================
+# CORS CONFIGURATION
+# ============================================================================
+
+# Allowed CORS origins (comma-separated)
+# Leave empty for wildcard (*) without credentials
+# FASTPROXY_CORS_ORIGINS=https://example.com,https://app.example.com
+
+# ============================================================================
+# RATE LIMITING
+# ============================================================================
+
+# Global rate limits are configured in config.yaml
+# Admin endpoints have automatic rate limiting (5 attempts per 5 minutes)
+
+# ============================================================================
+# DATABASE PATHS
+# ============================================================================
+
+# Audit log database path (default: audit/audit.db)
+# FASTPROXY_AUDIT_DB=audit/audit.db
+
+# API keys database path (default: security/api_keys.db)
+# FASTPROXY_API_KEYS_DB=security/api_keys.db
+
+# ============================================================================
+# EXAMPLE PRODUCTION CONFIGURATION
+# ============================================================================
+#
+# FASTPROXY_ADMIN_USERNAME=admin
+# FASTPROXY_ADMIN_PASSWORD=secure_random_password_here
+# FASTPROXY_JWT_SECRET=super_secret_jwt_key_at_least_32_chars_long
+# FASTPROXY_SSL_CERT=/etc/letsencrypt/live/example.com/fullchain.pem
+# FASTPROXY_SSL_KEY=/etc/letsencrypt/live/example.com/privkey.pem
+# FASTPROXY_SSL_PORT=443
+# FASTPROXY_CORS_ORIGINS=https://app.example.com,https://admin.example.com
+
