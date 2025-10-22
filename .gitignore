@@ -154,12 +154,12 @@ audit/audit.db-shm
 *.db-shm
 
 # Internal documentation (not for public)
-MVP_Features.md
-PUSH_TO_GITHUB.md
-DEPLOYMENT_SUMMARY.md
-REPOSITORY_INFO.md
-SECURITY_ANALYSIS.md
-SECURITY_SETUP.md
+docs/MVP_Features.md
+docs/PUSH_TO_GITHUB.md
+docs/DEPLOYMENT_SUMMARY.md
+docs/REPOSITORY_INFO.md
+docs/SECURITY_ANALYSIS.md
+docs/SECURITY_SETUP.md
 
 # Logs
 *.log

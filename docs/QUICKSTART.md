@@ -74,13 +74,13 @@ Open your browser and visit:
 
 ```bash
 # Start FastProxy and example backend services
-docker-compose up -d
+docker-compose -f docker/docker-compose.yml up -d
 
 # View logs
-docker-compose logs -f
+docker-compose -f docker/docker-compose.yml logs -f
 
 # Stop services
-docker-compose down
+docker-compose -f docker/docker-compose.yml down
 ```
 
 This will start:
@@ -91,7 +91,7 @@ This will start:
 
 ```bash
 # Build the image
-docker build -t fastproxy .
+docker build -f docker/Dockerfile -t fastproxy .
 
 # Run the container
 docker run -p 8000:8000 -v $(pwd)/config.yaml:/app/config.yaml fastproxy

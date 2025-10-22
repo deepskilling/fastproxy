@@ -190,8 +190,25 @@ footer (optional)
 ```bash
 git commit -m "feat(proxy): add WebSocket support"
 git commit -m "fix(rate-limit): correct sliding window calculation"
-git commit -m "docs(readme): update installation instructions"
+git commit -m "docs: update installation instructions"
 git commit -m "test(audit): add tests for log filtering"
+```
+
+## 📁 Project Structure
+
+```
+fastproxy/
+├── main.py                    # Application entry point
+├── config.yaml                # Configuration
+├── requirements.txt           # Dependencies
+├── .env.example              # Environment template
+├── proxy/                    # Core proxy module
+├── audit/                    # Audit logging module
+├── admin/                    # Admin API module
+├── security/                 # Security features
+├── tests/                    # Test suite
+├── docs/                     # Documentation files
+└── docker/                   # Docker configuration
 ```
 
 ## 🔄 Pull Request Process
