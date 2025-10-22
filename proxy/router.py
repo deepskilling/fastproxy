@@ -6,6 +6,8 @@ import logging
 from typing import Dict, List, Optional
 from pathlib import Path
 
+from security.ssrf_protection import validate_route_targets, SSRFValidationError
+
 logger = logging.getLogger(__name__)
 
 
@@ -31,6 +33,13 @@ class Router:
             
             # Validate routes
             self._validate_routes()
+            
+            # SSRF Protection: Validate all target URLs
+            try:
+                validate_route_targets(self.routes)
+            except SSRFValidationError as e:
+                logger.error(f"SSRF validation failed: {e}")
+                raise ValueError(f"Security validation failed: {e}")
             
             logger.info(f"Loaded {len(self.routes)} routes from {self.config_path}")
             return self.config

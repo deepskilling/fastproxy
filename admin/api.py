@@ -2,8 +2,11 @@
 Admin API - Configuration management and status endpoints
 """
 import logging
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Depends, Path
 from typing import List, Dict
+
+from security.auth import require_admin
+from security.validators import validate_ip_address
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +14,10 @@ router = APIRouter()
 
 
 @router.post("/reload")
-async def reload_config(request: Request):
+async def reload_config(
+    request: Request,
+    username: str = Depends(require_admin)
+):
     """
     Hot reload configuration from config.yaml
     
@@ -60,12 +66,15 @@ async def reload_config(request: Request):
         
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to reload configuration: {str(e)}"
+            detail="Failed to reload configuration"
         )
 
 
 @router.get("/routes")
-async def list_routes(request: Request) -> List[Dict[str, str]]:
+async def list_routes(
+    request: Request,
+    username: str = Depends(require_admin)
+) -> List[Dict[str, str]]:
     """
     List all configured routes
     
@@ -78,7 +87,10 @@ async def list_routes(request: Request) -> List[Dict[str, str]]:
 
 
 @router.get("/config")
-async def get_config(request: Request) -> Dict:
+async def get_config(
+    request: Request,
+    username: str = Depends(require_admin)
+) -> Dict:
     """
     Get full current configuration
     
@@ -94,7 +106,10 @@ async def get_config(request: Request) -> Dict:
 
 
 @router.get("/status")
-async def get_status(request: Request):
+async def get_status(
+    request: Request,
+    username: str = Depends(require_admin)
+):
     """
     Get proxy server status and statistics
     
@@ -120,12 +135,19 @@ async def get_status(request: Request):
 
 
 @router.post("/ratelimit/clear/{ip}")
-async def clear_rate_limit(request: Request, ip: str):
+async def clear_rate_limit(
+    request: Request,
+    ip: str = Path(..., regex=r'^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'),
+    username: str = Depends(require_admin)
+):
     """
     Clear rate limit for a specific IP address
     
     Removes all rate limit history for the specified IP.
     """
+    # Validate IP format
+    validate_ip_address(ip)
+    
     client_ip = request.client.host if request.client else "unknown"
     rate_limiter = request.app.state.rate_limiter
     
@@ -146,12 +168,19 @@ async def clear_rate_limit(request: Request, ip: str):
 
 
 @router.get("/ratelimit/stats/{ip}")
-async def get_rate_limit_stats(request: Request, ip: str):
+async def get_rate_limit_stats(
+    request: Request,
+    ip: str = Path(..., regex=r'^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'),
+    username: str = Depends(require_admin)
+):
     """
     Get rate limit statistics for a specific IP
     
     Returns current rate limit usage for the specified IP.
     """
+    # Validate IP format
+    validate_ip_address(ip)
+    
     rate_limiter = request.app.state.rate_limiter
     stats = rate_limiter.get_stats(ip)
     

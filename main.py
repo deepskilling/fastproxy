@@ -3,6 +3,7 @@ FastProxy - FastAPI-based Reverse Proxy MVP
 Main application entrypoint with async proxy forwarding and middleware
 """
 import logging
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,6 +17,7 @@ from audit.middleware import AuditMiddleware
 from audit.logger import AuditLogger
 from audit.api import router as audit_router
 from admin.api import router as admin_router
+from security.middleware import SecurityHeadersMiddleware, RequestBodySizeLimitMiddleware
 
 # Configure logging
 logging.basicConfig(
@@ -57,18 +59,34 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Add CORS middleware
+# Add CORS middleware (SECURE CONFIGURATION)
+# Get allowed origins from environment variable or use secure default
+ALLOWED_ORIGINS = os.getenv("FASTPROXY_CORS_ORIGINS", "").split(",")
+if not ALLOWED_ORIGINS or ALLOWED_ORIGINS == [""]:
+    # Default: no CORS with wildcard + credentials (SECURE)
+    ALLOWED_ORIGINS = ["*"]
+    ALLOW_CREDENTIALS = False
+    logger.warning(
+        "⚠️  CORS: Using wildcard origin without credentials. "
+        "Set FASTPROXY_CORS_ORIGINS env var for specific origins."
+    )
+else:
+    ALLOW_CREDENTIALS = True
+    logger.info(f"✅ CORS: Allowing origins: {ALLOWED_ORIGINS}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=ALLOW_CREDENTIALS,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"],
     allow_headers=["*"],
 )
 
-# Add custom middlewares
-app.add_middleware(RequestLoggingMiddleware)
-app.add_middleware(AuditMiddleware)
+# Add security middlewares (ORDER MATTERS!)
+app.add_middleware(SecurityHeadersMiddleware)      # Add security headers
+app.add_middleware(RequestBodySizeLimitMiddleware) # Enforce body size limit
+app.add_middleware(RequestLoggingMiddleware)        # Log requests
+app.add_middleware(AuditMiddleware)                 # Audit logging
 
 # Include routers
 app.include_router(admin_router, prefix="/admin", tags=["admin"])
@@ -109,10 +127,13 @@ async def proxy_handler(request: Request, path: str):
         response = await forward_request(request, route["target"], path)
         return response
     except Exception as e:
-        logger.error(f"Error forwarding request: {e}")
+        # Log detailed error internally (with stack trace)
+        logger.error(f"Error forwarding request to {route['target']}: {e}", exc_info=True)
+        
+        # Return generic error to client (no details leaked)
         return JSONResponse(
             status_code=502,
-            content={"error": "Bad Gateway", "detail": str(e)}
+            content={"error": "Bad Gateway"}
         )
 
 
