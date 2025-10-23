@@ -1,10 +1,23 @@
 routes:
+  # Next.js API routes (if using Next.js API routes)
   - path: /api/
-    target: http://127.0.0.1:8001
+    target: http://127.0.0.1:3000
+  
+  # Next.js static assets and pages
+  - path: /_next/
+    target: http://127.0.0.1:3000
+  
+  # Auth service (if separate)
   - path: /auth/
     target: http://127.0.0.1:8002
+  
+  # Other services
   - path: /service/
     target: http://127.0.0.1:8003
+  
+  # Root path - Next.js (MUST BE LAST for prefix matching)
+  - path: /
+    target: http://127.0.0.1:3000
 
 rate_limit:
   requests_per_minute: 100
