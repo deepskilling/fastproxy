@@ -11,6 +11,7 @@ pyyaml==6.0.2
 # Security dependencies
 python-jose[cryptography]==3.3.0  # JWT authentication
 cryptography==41.0.7              # SSL/TLS and encryption
+pyOpenSSL==24.0.0                 # SSL certificate expiry checking (auto-SSL)
 
 # Optional dependencies for production
 python-multipart==0.0.12

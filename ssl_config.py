@@ -1,6 +1,11 @@
 """
 TLS/HTTPS Configuration Module
 Provides utilities for running FastProxy with SSL/TLS support
+
+Features:
+- Manual SSL configuration
+- Automatic SSL (Caddy-like) with Let's Encrypt
+- Self-signed certificates for development
 """
 import os
 import ssl
@@ -13,31 +18,69 @@ logger = logging.getLogger(__name__)
 
 def create_ssl_context(
     certfile: Optional[str] = None,
-    keyfile: Optional[str] = None
+    keyfile: Optional[str] = None,
+    auto_ssl: bool = True
 ) -> Optional[ssl.SSLContext]:
     """
     Create SSL context for HTTPS support
     
+    Supports three modes:
+    1. Auto-SSL (Caddy-like) - Automatic Let's Encrypt certificates
+    2. Manual SSL - Existing certificate files
+    3. Self-signed - Development only
+    
     Args:
         certfile: Path to SSL certificate file (default: from env FASTPROXY_SSL_CERT)
         keyfile: Path to SSL key file (default: from env FASTPROXY_SSL_KEY)
+        auto_ssl: Enable automatic SSL with Let's Encrypt (default: True)
     
     Returns:
         SSLContext if certificates are available, None otherwise
     
     Environment Variables:
+        # Auto-SSL (Caddy-like)
+        FASTPROXY_DOMAIN: Your domain name (e.g., example.com)
+        FASTPROXY_SSL_EMAIL: Email for Let's Encrypt notifications
+        FASTPROXY_AUTO_SSL: Enable auto-SSL (default: true if domain/email set)
+        
+        # Manual SSL
         FASTPROXY_SSL_CERT: Path to SSL certificate
         FASTPROXY_SSL_KEY: Path to SSL key
         FASTPROXY_SSL_CA_BUNDLE: Optional path to CA bundle
     
-    Example:
-        # Using environment variables
+    Example (Auto-SSL):
+        # Set domain and email - certificates handled automatically!
+        export FASTPROXY_DOMAIN=example.com
+        export FASTPROXY_SSL_EMAIL=admin@example.com
+        python main.py  # Automatically gets Let's Encrypt cert!
+    
+    Example (Manual SSL):
         export FASTPROXY_SSL_CERT=/path/to/cert.pem
         export FASTPROXY_SSL_KEY=/path/to/key.pem
-        
-        # Run with SSL
-        python main.py  # Will detect env vars and enable HTTPS
+        python main.py
     """
+    # Check if auto-SSL is enabled and configured
+    domain = os.getenv("FASTPROXY_DOMAIN")
+    email = os.getenv("FASTPROXY_SSL_EMAIL")
+    auto_ssl_enabled = os.getenv("FASTPROXY_AUTO_SSL", "true").lower() == "true"
+    
+    if auto_ssl and auto_ssl_enabled and domain and email:
+        logger.info("🔒 Auto-SSL enabled (Caddy-like)")
+        try:
+            from security.auto_ssl import get_auto_ssl_context
+            
+            ssl_context = get_auto_ssl_context(domain=domain, email=email)
+            if ssl_context:
+                logger.info("✅ Auto-SSL context created successfully")
+                return ssl_context
+            else:
+                logger.warning("⚠️  Auto-SSL failed, falling back to manual configuration")
+        except ImportError as e:
+            logger.warning(f"⚠️  Auto-SSL module not available: {e}")
+        except Exception as e:
+            logger.error(f"❌ Auto-SSL error: {e}")
+            logger.warning("⚠️  Falling back to manual SSL configuration")
+    
     # Get certificate paths from environment or parameters
     cert_path = certfile or os.getenv("FASTPROXY_SSL_CERT")
     key_path = keyfile or os.getenv("FASTPROXY_SSL_KEY")

@@ -17,14 +17,23 @@ FASTPROXY_JWT_SECRET=CHANGE_THIS_SECRET_KEY_IN_PRODUCTION
 # SSL/TLS CONFIGURATION
 # ============================================================================
 
-# SSL Certificate and Key Paths (for HTTPS)
-# If not set, server runs in HTTP mode
+# Option 1: AUTO-SSL (Caddy-like) - Automatic Let's Encrypt certificates
+# Just set domain and email - certificates are handled automatically!
+FASTPROXY_DOMAIN=example.com
+FASTPROXY_SSL_EMAIL=admin@example.com
+FASTPROXY_AUTO_SSL=true           # Enable auto-SSL (default: true)
+
+# Option 2: MANUAL SSL - Use existing certificates
+# If auto-SSL is disabled or unavailable, use manual certificates
 # FASTPROXY_SSL_CERT=/path/to/cert.pem
 # FASTPROXY_SSL_KEY=/path/to/key.pem
 # FASTPROXY_SSL_CA_BUNDLE=/path/to/ca-bundle.pem
 
-# SSL Port (default: 8443)
-# FASTPROXY_SSL_PORT=8443
+# SSL Port (default: 443 for auto-SSL, 8443 for manual)
+# FASTPROXY_SSL_PORT=443
+
+# Certificate storage directory (default: ./certs)
+# FASTPROXY_CERT_DIR=./certs
 
 # ============================================================================
 # CORS CONFIGURATION
@@ -55,11 +64,22 @@ FASTPROXY_JWT_SECRET=CHANGE_THIS_SECRET_KEY_IN_PRODUCTION
 # EXAMPLE PRODUCTION CONFIGURATION
 # ============================================================================
 #
+# With Auto-SSL (Recommended):
+# FASTPROXY_DOMAIN=example.com
+# FASTPROXY_SSL_EMAIL=admin@example.com
 # FASTPROXY_ADMIN_USERNAME=admin
 # FASTPROXY_ADMIN_PASSWORD=secure_random_password_here
 # FASTPROXY_JWT_SECRET=super_secret_jwt_key_at_least_32_chars_long
+# FASTPROXY_SSL_PORT=443
+# FASTPROXY_CORS_ORIGINS=https://example.com
+#
+# With Manual SSL:
+# FASTPROXY_AUTO_SSL=false
 # FASTPROXY_SSL_CERT=/etc/letsencrypt/live/example.com/fullchain.pem
 # FASTPROXY_SSL_KEY=/etc/letsencrypt/live/example.com/privkey.pem
+# FASTPROXY_ADMIN_USERNAME=admin
+# FASTPROXY_ADMIN_PASSWORD=secure_random_password_here
+# FASTPROXY_JWT_SECRET=super_secret_jwt_key_at_least_32_chars_long
 # FASTPROXY_SSL_PORT=443
-# FASTPROXY_CORS_ORIGINS=https://app.example.com,https://admin.example.com
+# FASTPROXY_CORS_ORIGINS=https://example.com
 
