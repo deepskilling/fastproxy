@@ -21,7 +21,7 @@ certbot==5.1.0                    # Automatic SSL certificate management
 python-multipart==0.0.12
 
 # Testing dependencies (dev)
-pytest==8.3.3
+pytest==8.4.2
 pytest-asyncio==0.24.0
 pytest-cov==6.0.0
 
