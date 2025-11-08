@@ -18,7 +18,7 @@ acme==5.1.0                       # ACME protocol for Let's Encrypt
 certbot==5.1.0                    # Automatic SSL certificate management
 
 # Optional dependencies for production
-python-multipart==0.0.12
+python-multipart==0.0.20
 
 # Testing dependencies (dev)
 pytest==8.3.3
