@@ -1,7 +1,7 @@
 # ============================================================================
-# FastProxy Production Stack - Docker Compose
+# FastProxy Demo Stack - Docker Compose
 # ============================================================================
-# Production-ready deployment with custom backends
+# Complete demo environment with FastProxy + Management WebApp
 # ============================================================================
 
 version: '3.8'
@@ -17,18 +17,21 @@ services:
     container_name: fastproxy
     ports:
       - "8000:8000"   # HTTP
-      - "443:443"     # HTTPS
-      - "80:80"       # HTTP (for Let's Encrypt challenges)
+      - "443:443"     # HTTPS (if enabled)
     volumes:
-      - ../config.yaml:/app/config.yaml:ro
+      - ../config.demo.yaml:/app/config.yaml:ro
       - fastproxy-audit:/app/audit
       - fastproxy-certs:/app/cert_manager/certs
-      - fastproxy-accounts:/app/cert_manager/accounts
     environment:
       - LOG_LEVEL=INFO
       - PYTHONUNBUFFERED=1
     networks:
       - fastproxy-network
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health')"]
@@ -38,48 +41,23 @@ services:
       start_period: 40s
 
   # ==========================================================================
-  # Example Backend Services (Replace with your actual backends)
-  # ==========================================================================
-  
-  # Backend 1 - Example HTTP service
-  backend1:
-    image: kennethreitz/httpbin
-    container_name: fastproxy-backend1
-    expose:
-      - "80"
-    networks:
-      - fastproxy-network
-    restart: unless-stopped
-
-  # Backend 2 - Example HTTP service
-  backend2:
-    image: kennethreitz/httpbin
-    container_name: fastproxy-backend2
-    expose:
-      - "80"
-    networks:
-      - fastproxy-network
-    restart: unless-stopped
-
-  # ==========================================================================
-  # Optional: Management WebApp (Comment out if not needed)
-  # ==========================================================================
-  
   # Management Backend API
-  backend-api:
+  # ==========================================================================
+  backend:
     build:
       context: ..
       dockerfile: docker/Dockerfile.backend
-    container_name: fastproxy-backend-api
-    expose:
-      - "8001"
+    container_name: fastproxy-backend
+    ports:
+      - "8001:8001"
     volumes:
-      - ../config.yaml:/app/config.yaml:rw
+      - ../config.demo.yaml:/app/config.yaml:rw
       - backend-logs:/app/logs
     environment:
       - BACKEND_PORT=8001
       - BACKEND_HOST=0.0.0.0
       - FASTPROXY_CONFIG_PATH=/app/config.yaml
+      - PYTHONUNBUFFERED=1
     networks:
       - fastproxy-network
     restart: unless-stopped
@@ -88,25 +66,34 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 20s
 
+  # ==========================================================================
   # Management Frontend UI
-  frontend-ui:
+  # ==========================================================================
+  frontend:
     build:
       context: ..
       dockerfile: docker/Dockerfile.frontend
       args:
-        NEXT_PUBLIC_API_URL: http://backend-api:8001
-    container_name: fastproxy-frontend-ui
-    expose:
-      - "3000"
+        NEXT_PUBLIC_API_URL: http://backend:8001
+    container_name: fastproxy-frontend
+    ports:
+      - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://backend-api:8001
+      - NEXT_PUBLIC_API_URL=http://localhost:8001
       - NODE_ENV=production
     networks:
       - fastproxy-network
     depends_on:
-      - backend-api
+      - backend
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 # ============================================================================
 # Networks
@@ -124,7 +111,6 @@ volumes:
     name: fastproxy-audit
   fastproxy-certs:
     name: fastproxy-certs
-  fastproxy-accounts:
-    name: fastproxy-accounts
   backend-logs:
     name: fastproxy-backend-logs
+

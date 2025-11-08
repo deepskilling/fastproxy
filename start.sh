@@ -5,15 +5,23 @@
 echo "🚀 FastProxy - Starting Server"
 echo "==============================="
 
-# Check if virtual environment exists
-if [ ! -d "venv" ]; then
-    echo "📦 Creating virtual environment..."
-    python3 -m venv venv
+# Check if conda is available
+if ! command -v conda &> /dev/null; then
+    echo "❌ Conda not found. Please install Miniconda or Anaconda."
+    echo "Download from: https://docs.conda.io/en/latest/miniconda.html"
+    exit 1
 fi
 
-# Activate virtual environment
-echo "🔌 Activating virtual environment..."
-source venv/bin/activate
+# Check if fastapi environment exists
+if ! conda env list | grep -q "^fastapi "; then
+    echo "📦 Creating conda environment 'fastapi'..."
+    conda create -n fastapi python=3.11 -y
+fi
+
+# Activate conda environment
+echo "🔌 Activating conda environment..."
+eval "$(conda shell.bash hook)"
+conda activate fastapi
 
 # Install dependencies
 echo "📚 Installing dependencies..."

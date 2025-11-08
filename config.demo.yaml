@@ -1,0 +1,86 @@
+# ============================================================================
+# FastProxy Demo Configuration
+# ============================================================================
+# This configuration demonstrates FastProxy with the management webapp
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Automatic HTTPS Configuration
+# ----------------------------------------------------------------------------
+# For demo purposes, HTTPS is disabled. Enable for production use.
+auto_https:
+  enabled: false  # Set to true for production with valid domain
+  domain: "your-domain.com"
+  email: "admin@your-domain.com"
+  staging: true  # Use Let's Encrypt staging for testing
+  auto_renew: true
+  check_interval_hours: 24
+
+# ----------------------------------------------------------------------------
+# Routes Configuration
+# ----------------------------------------------------------------------------
+# FastProxy routes traffic to the management webapp:
+#   - /api/* → Backend API (port 8001)
+#   - /* → Frontend UI (port 3000)
+# ----------------------------------------------------------------------------
+routes:
+  # Management API routes (must come first - more specific match)
+  - path: /api
+    target: http://127.0.0.1:8001
+    strip_path: false  # Keep /api prefix for backend routing
+  
+  # Frontend application (Next.js)
+  - path: /
+    target: http://127.0.0.1:3000
+    strip_path: false
+
+# ----------------------------------------------------------------------------
+# Rate Limiting Configuration
+# ----------------------------------------------------------------------------
+rate_limit:
+  requests_per_minute: 100  # Adjust based on expected traffic
+
+# ----------------------------------------------------------------------------
+# CORS Configuration
+# ----------------------------------------------------------------------------
+# Configured for local development
+cors:
+  allow_origins: 
+    - "http://localhost:3000"
+    - "http://localhost:8001"
+    - "http://127.0.0.1:3000"
+    - "http://127.0.0.1:8001"
+    - "http://localhost:8000"
+  allow_credentials: true
+  allow_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
+  allow_headers: ["Content-Type", "Authorization", "X-Requested-With"]
+
+# ----------------------------------------------------------------------------
+# Request Body Size Limit
+# ----------------------------------------------------------------------------
+max_body_size: 10485760  # 10 MB
+
+# ----------------------------------------------------------------------------
+# Proxy Settings
+# ----------------------------------------------------------------------------
+proxy_settings:
+  timeout: 30.0  # seconds
+  max_keepalive_connections: 100
+  max_connections: 200
+
+# ----------------------------------------------------------------------------
+# Security Settings
+# ----------------------------------------------------------------------------
+security:
+  allow_private_ips: true  # Required for local development
+
+# ----------------------------------------------------------------------------
+# Logging Configuration
+# ----------------------------------------------------------------------------
+logging:
+  level: INFO  # Use DEBUG for troubleshooting
+
+# ============================================================================
+# End of Demo Configuration
+# ============================================================================
+

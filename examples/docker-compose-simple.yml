@@ -1,0 +1,38 @@
+# ============================================================================
+# Simple Docker Compose Example
+# ============================================================================
+# Minimal example for getting started with FastProxy in Docker
+# ============================================================================
+
+version: '3.8'
+
+services:
+  # FastProxy
+  fastproxy:
+    image: fastproxy:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    environment:
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+
+  # Your backend service
+  backend:
+    image: your-backend:latest
+    expose:
+      - "8001"
+    restart: unless-stopped
+
+  # Your frontend service
+  frontend:
+    image: your-frontend:latest
+    expose:
+      - "3000"
+    restart: unless-stopped
+
+networks:
+  default:
+    name: fastproxy-network
+

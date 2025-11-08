@@ -1,0 +1,52 @@
+# ============================================================================
+# FastProxy Basic Configuration Example
+# ============================================================================
+# Simple configuration for getting started with FastProxy
+# ============================================================================
+
+# Disable HTTPS for local development
+auto_https:
+  enabled: false
+
+# Define your routes
+routes:
+  # Example: Proxy API requests to backend
+  - path: /api
+    target: http://backend:8001
+    strip_path: false
+  
+  # Example: Serve frontend
+  - path: /
+    target: http://frontend:3000
+    strip_path: false
+
+# Rate limiting
+rate_limit:
+  requests_per_minute: 100
+
+# CORS for local development
+cors:
+  allow_origins:
+    - "http://localhost:3000"
+    - "http://localhost:8001"
+  allow_credentials: true
+  allow_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+  allow_headers: ["*"]
+
+# Request size limit (10 MB)
+max_body_size: 10485760
+
+# Proxy settings
+proxy_settings:
+  timeout: 30.0
+  max_keepalive_connections: 100
+  max_connections: 200
+
+# Allow private IPs for internal services
+security:
+  allow_private_ips: true
+
+# Logging
+logging:
+  level: INFO
+

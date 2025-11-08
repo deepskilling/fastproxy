@@ -5,10 +5,14 @@ Validates target URLs to prevent attacks on internal infrastructure
 import socket
 import ipaddress
 import logging
+import os
 from urllib.parse import urlparse
 from typing import List
 
 logger = logging.getLogger(__name__)
+
+# Check if private IPs should be allowed (for internal proxying)
+ALLOW_PRIVATE_IPS = os.environ.get('FASTPROXY_ALLOW_PRIVATE_IPS', 'false').lower() == 'true'
 
 # Blocked IP ranges (RFC 1918 private networks + special use)
 BLOCKED_CIDRS = [
@@ -23,6 +27,11 @@ BLOCKED_CIDRS = [
     ipaddress.ip_network('::1/128'),         # IPv6 loopback
     ipaddress.ip_network('fe80::/10'),       # IPv6 link-local
     ipaddress.ip_network('fc00::/7'),        # IPv6 private
+]
+
+# Always block metadata endpoints
+ALWAYS_BLOCKED_CIDRS = [
+    ipaddress.ip_network('169.254.0.0/16'),  # Link-local (AWS/GCP metadata!)
 ]
 
 # Blocked hostnames
@@ -43,71 +52,60 @@ def validate_target_url(url: str) -> bool:
     Validate target URL against SSRF attacks
     
     Prevents access to:
-    - Private IP ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16)
-    - Loopback addresses (127.0.0.0/8, ::1)
-    - Link-local addresses (169.254.0.0/16) - AWS/GCP metadata!
+    - Private IP ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) - unless ALLOW_PRIVATE_IPS=true
+    - Loopback addresses (127.0.0.0/8, ::1) - unless ALLOW_PRIVATE_IPS=true
+    - Link-local addresses (169.254.0.0/16) - ALWAYS BLOCKED (metadata!)
     - Blocked hostnames
     
     Args:
         url: Target URL to validate
-    
+        
     Returns:
         True if URL is safe
-    
+        
     Raises:
-        SSRFValidationError: If URL is potentially malicious
+        SSRFValidationError: If URL fails validation
     """
+    parsed = urlparse(url)
+    hostname = parsed.hostname
+    
+    if not hostname:
+        raise SSRFValidationError("Invalid URL: no hostname")
+    
+    # Check blocked hostnames
+    if hostname.lower() in BLOCKED_HOSTNAMES:
+        raise SSRFValidationError(f"Blocked hostname: {hostname}")
+    
     try:
-        parsed = urlparse(url)
+        # Resolve hostname to IP
+        ip_str = socket.gethostbyname(hostname)
+        ip = ipaddress.ip_address(ip_str)
         
-        # Check scheme
-        if parsed.scheme not in ['http', 'https']:
-            raise SSRFValidationError(
-                f"Invalid URL scheme: {parsed.scheme}. Only http/https allowed."
-            )
-        
-        hostname = parsed.hostname
-        if not hostname:
-            raise SSRFValidationError("URL must contain a hostname")
-        
-        # Check against blocked hostnames
-        hostname_lower = hostname.lower()
-        for blocked in BLOCKED_HOSTNAMES:
-            if blocked in hostname_lower:
+        # Always block metadata endpoints
+        for cidr in ALWAYS_BLOCKED_CIDRS:
+            if ip in cidr:
                 raise SSRFValidationError(
-                    f"Blocked hostname detected: {hostname}"
+                    f"Target URL resolves to blocked IP range: {ip} in {cidr}"
                 )
         
-        # Resolve hostname to IP address
-        try:
-            ip_str = socket.gethostbyname(hostname)
-        except socket.gaierror as e:
-            raise SSRFValidationError(
-                f"Unable to resolve hostname {hostname}: {e}"
-            )
-        
-        # Parse IP address
-        try:
-            ip_obj = ipaddress.ip_address(ip_str)
-        except ValueError as e:
-            raise SSRFValidationError(
-                f"Invalid IP address {ip_str}: {e}"
-            )
+        # If private IPs are allowed, skip other checks
+        if ALLOW_PRIVATE_IPS:
+            logger.info(f"Private IP access allowed for {ip}")
+            return True
         
         # Check against blocked CIDR ranges
         for cidr in BLOCKED_CIDRS:
-            if ip_obj in cidr:
+            if ip in cidr:
                 raise SSRFValidationError(
-                    f"Target URL resolves to blocked IP range: {ip_str} in {cidr}"
+                    f"Target URL resolves to blocked IP range: {ip} in {cidr}"
                 )
-        
-        logger.info(f"✅ SSRF validation passed for {url} → {ip_str}")
-        return True
-        
-    except SSRFValidationError:
-        raise
-    except Exception as e:
-        raise SSRFValidationError(f"URL validation error: {e}")
+                
+    except socket.gaierror:
+        raise SSRFValidationError(f"Could not resolve hostname: {hostname}")
+    except ValueError as e:
+        raise SSRFValidationError(f"Invalid IP address: {e}")
+    
+    return True
 
 
 def validate_route_targets(routes: List[dict]) -> bool:
@@ -116,24 +114,21 @@ def validate_route_targets(routes: List[dict]) -> bool:
     
     Args:
         routes: List of route dictionaries with 'target' keys
-    
+        
     Returns:
-        True if all targets are valid
-    
+        True if all targets are safe
+        
     Raises:
-        SSRFValidationError: If any target is invalid
+        SSRFValidationError: If any target fails validation
     """
     for idx, route in enumerate(routes):
         target = route.get('target')
         if not target:
             continue
-        
+            
         try:
             validate_target_url(target)
         except SSRFValidationError as e:
-            raise SSRFValidationError(
-                f"Route {idx} has invalid target: {e}"
-            )
+            raise SSRFValidationError(f"Route {idx} has invalid target: {e}")
     
     return True
-

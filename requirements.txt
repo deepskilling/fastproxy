@@ -10,8 +10,12 @@ pyyaml==6.0.2
 
 # Security dependencies
 python-jose[cryptography]==3.3.0  # JWT authentication
-cryptography==41.0.7              # SSL/TLS and encryption
-pyOpenSSL==24.0.0                 # SSL certificate expiry checking (auto-SSL)
+cryptography==46.0.3              # SSL/TLS and encryption (upgraded)
+pyOpenSSL==25.3.0                 # SSL certificate expiry checking (upgraded)
+
+# SSL/ACME dependencies (for auto-SSL)
+acme==5.1.0                       # ACME protocol for Let's Encrypt
+certbot==5.1.0                    # Automatic SSL certificate management
 
 # Optional dependencies for production
 python-multipart==0.0.12

@@ -1,32 +1,127 @@
+# ============================================================================
+# FastProxy Configuration File
+# ============================================================================
+# All proxy settings are configured through this file.
+# Changes require FastProxy restart to take effect.
+# 
+# NOTE: This is the PRODUCTION configuration.
+# For demo/development, use config.demo.yaml
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Automatic HTTPS Configuration
+# ----------------------------------------------------------------------------
+auto_https:
+  enabled: true  # Enable for production with valid domain
+  domain: "deepskilling.com"  # Your domain name
+  email: "admin@deepskilling.com"  # Email for Let's Encrypt
+  staging: false  # Set to true for testing, false for production certs
+  auto_renew: true
+  check_interval_hours: 24
+
+# ----------------------------------------------------------------------------
+# Routes Configuration
+# ----------------------------------------------------------------------------
+# Define routing rules for incoming requests.
+# Routes are matched by prefix (longest match wins).
+# 
+# FOR DEMO: These routes work with the included management webapp
+#   - /api → Management API Backend (port 8001)
+#   - / → Management UI Frontend (port 3000)
+# 
+# FOR PRODUCTION: Replace these with your actual backend services
+# ----------------------------------------------------------------------------
 routes:
-  # Next.js API routes (if using Next.js API routes)
-  - path: /api/
-    target: http://127.0.0.1:3000
+  # Management API routes (for webapp demo)
+  - path: /api
+    target: http://127.0.0.1:8001
+    strip_path: false  # Keep /api prefix for backend routing
   
-  # Next.js static assets and pages
-  - path: /_next/
-    target: http://127.0.0.1:3000
-  
-  # Auth service (if separate)
-  - path: /auth/
-    target: http://127.0.0.1:8002
-  
-  # Other services
-  - path: /service/
-    target: http://127.0.0.1:8003
-  
-  # Root path - Next.js (MUST BE LAST for prefix matching)
+  # Management UI frontend (for webapp demo)
+  # Replace with your production frontend
   - path: /
     target: http://127.0.0.1:3000
+    strip_path: false
 
+# ----------------------------------------------------------------------------
+# Rate Limiting Configuration
+# ----------------------------------------------------------------------------
 rate_limit:
-  requests_per_minute: 100
+  requests_per_minute: 1000  # Adjust based on your needs
 
+# ----------------------------------------------------------------------------
+# CORS Configuration
+# ----------------------------------------------------------------------------
 cors:
-  allow_origins: ["*"]
+  allow_origins: 
+    - "http://localhost:3000"  # Local development
+    - "http://localhost:8001"
+    - "http://44.200.74.124:8080"
+    - "http://deepskilling.com"
+    - "https://deepskilling.com"
+    - "http://www.deepskilling.com"
+    - "https://www.deepskilling.com"
   allow_credentials: true
-  allow_methods: ["*"]
-  allow_headers: ["*"]
+  allow_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
+  allow_headers: ["Content-Type", "Authorization", "X-Requested-With"]
 
+# ----------------------------------------------------------------------------
+# Request Body Size Limit
+# ----------------------------------------------------------------------------
+# Maximum size of incoming request bodies in bytes.
+# Requests exceeding this limit will receive HTTP 413 error.
+#
+# Examples:
+#   - 1048576 = 1 MB
+#   - 10485760 = 10 MB
+#   - 104857600 = 100 MB
+# ----------------------------------------------------------------------------
 max_body_size: 10485760  # 10 MB in bytes
 
+# ----------------------------------------------------------------------------
+# Proxy Settings (HTTP Client Configuration)
+# ----------------------------------------------------------------------------
+# Controls how FastProxy connects to backend servers.
+#
+# timeout: Maximum time to wait for backend response (in seconds)
+# max_keepalive_connections: Keep-alive connection pool size
+# max_connections: Maximum total concurrent connections to backends
+#
+# Tuning tips:
+#   - Increase timeout for slow backends
+#   - Increase connection limits for high-traffic scenarios
+# ----------------------------------------------------------------------------
+proxy_settings:
+  timeout: 30.0  # seconds
+  max_keepalive_connections: 100
+  max_connections: 200
+
+# ----------------------------------------------------------------------------
+# Security Settings
+# ----------------------------------------------------------------------------
+# Controls security features and protections.
+#
+# allow_private_ips: Allow proxying to private IP addresses (RFC 1918)
+#   - true: Allow internal IPs (required for internal services)
+#   - false: Block private IPs (SSRF protection for public proxies)
+# ----------------------------------------------------------------------------
+security:
+  allow_private_ips: true  # Required for internal service proxying
+
+# ----------------------------------------------------------------------------
+# Logging Configuration
+# ----------------------------------------------------------------------------
+# Controls logging verbosity.
+#
+# Levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
+#   - DEBUG: Detailed information for debugging
+#   - INFO: General informational messages (recommended)
+#   - WARNING: Warning messages only
+#   - ERROR: Error messages only
+# ----------------------------------------------------------------------------
+logging:
+  level: INFO  # DEBUG | INFO | WARNING | ERROR | CRITICAL
+
+# ============================================================================
+# End of Configuration
+# ============================================================================

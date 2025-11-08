@@ -1,0 +1,58 @@
+# ============================================================================
+# FastProxy Production Configuration Example
+# ============================================================================
+# Production-ready configuration with security best practices
+# ============================================================================
+
+# Enable HTTPS with Let's Encrypt
+auto_https:
+  enabled: true
+  domain: "yourdomain.com"
+  email: "admin@yourdomain.com"
+  staging: false  # Use production certificates
+  auto_renew: true
+  check_interval_hours: 24
+
+# Production routes
+routes:
+  # API backend
+  - path: /api
+    target: http://backend:8001
+    strip_path: false
+  
+  # Static frontend
+  - path: /
+    target: http://frontend:3000
+    strip_path: false
+
+# Strict rate limiting
+rate_limit:
+  requests_per_minute: 500
+
+# Restrictive CORS
+cors:
+  allow_origins:
+    - "https://yourdomain.com"
+    - "https://www.yourdomain.com"
+  allow_credentials: true
+  allow_methods: ["GET", "POST", "PUT", "DELETE"]
+  allow_headers: ["Content-Type", "Authorization"]
+
+# Reasonable request size
+max_body_size: 10485760  # 10 MB
+
+# Production proxy settings
+proxy_settings:
+  timeout: 30.0
+  max_keepalive_connections: 200
+  max_connections: 400
+
+# Security settings
+security:
+  allow_private_ips: true  # Allow if using internal services
+  # Set to false if proxying to public internet
+
+# Production logging
+logging:
+  level: WARNING  # Only log warnings and errors in production
+

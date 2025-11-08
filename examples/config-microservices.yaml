@@ -1,0 +1,66 @@
+# ============================================================================
+# FastProxy Microservices Configuration Example
+# ============================================================================
+# Example configuration for proxying multiple microservices
+# ============================================================================
+
+auto_https:
+  enabled: true
+  domain: "api.example.com"
+  email: "admin@example.com"
+  staging: false
+
+# Route different services based on path
+routes:
+  # User service
+  - path: /users
+    target: http://user-service:8001
+    strip_path: true
+  
+  # Product service
+  - path: /products
+    target: http://product-service:8002
+    strip_path: true
+  
+  # Order service
+  - path: /orders
+    target: http://order-service:8003
+    strip_path: true
+  
+  # Payment service
+  - path: /payments
+    target: http://payment-service:8004
+    strip_path: true
+  
+  # Admin dashboard
+  - path: /admin
+    target: http://admin-ui:3000
+    strip_path: false
+
+# Higher rate limit for production
+rate_limit:
+  requests_per_minute: 1000
+
+# Production CORS
+cors:
+  allow_origins:
+    - "https://example.com"
+    - "https://www.example.com"
+    - "https://app.example.com"
+  allow_credentials: true
+  allow_methods: ["GET", "POST", "PUT", "DELETE", "PATCH"]
+  allow_headers: ["Content-Type", "Authorization", "X-API-Key"]
+
+max_body_size: 52428800  # 50 MB
+
+proxy_settings:
+  timeout: 60.0
+  max_keepalive_connections: 500
+  max_connections: 1000
+
+security:
+  allow_private_ips: true  # Allow internal service communication
+
+logging:
+  level: INFO
+
