@@ -9,7 +9,7 @@ pydantic==2.9.2
 pyyaml==6.0.2
 
 # Security dependencies
-python-jose[cryptography]==3.3.0  # JWT authentication
+python-jose[cryptography]==3.5.0  # JWT authentication
 cryptography==46.0.3              # SSL/TLS and encryption (upgraded)
 pyOpenSSL==25.3.0                 # SSL certificate expiry checking (upgraded)
 
