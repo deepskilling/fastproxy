@@ -6,8 +6,6 @@ const nextConfig = {
   },
   // Enable standalone output for Docker
   output: 'standalone',
-  // Disable telemetry in Docker
-  telemetry: false,
 }
 
 module.exports = nextConfig

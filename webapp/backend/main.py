@@ -23,14 +23,18 @@ app = FastAPI(
 # CORS middleware configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],  # React dev servers
+    allow_origins=[
+        "http://localhost:3000",      # Frontend dev server (direct)
+        "http://localhost:5173",      # Alternative dev port
+        "http://localhost:8000",      # FastProxy reverse proxy
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Security
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)  # auto_error=False makes auth optional for development
 
 # Configuration paths
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config.yaml"
@@ -92,11 +96,13 @@ def save_config(config: dict) -> None:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to save configuration: {str(e)}")
 
-async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+async def verify_token(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)):
     """Verify JWT token or API key"""
     # TODO: Implement proper token verification
-    # For now, accept any token for development
-    return credentials.credentials
+    # For now, allow access without authentication for development
+    if credentials:
+        return credentials.credentials
+    return None  # Allow unauthenticated access for development
 
 # API Endpoints
 

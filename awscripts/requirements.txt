@@ -1,0 +1,4 @@
+# AWS EC2 Launch Script Requirements
+boto3>=1.34.0
+botocore>=1.34.0
+

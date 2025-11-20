@@ -75,13 +75,15 @@ class Router:
         """
         Find matching route for given path
         Uses prefix matching - longest match wins
+        Route must be followed by '/' or be an exact match
         """
         best_match = None
         best_match_length = 0
         
         for route in self.routes:
             route_path = route['path']
-            if path.startswith(route_path):
+            # Check if path matches: exact match OR starts with route_path followed by /
+            if path == route_path or path.startswith(route_path + '/') or (route_path == '/' and path.startswith('/')):
                 if len(route_path) > best_match_length:
                     best_match = route
                     best_match_length = len(route_path)

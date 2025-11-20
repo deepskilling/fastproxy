@@ -85,7 +85,7 @@ export default function ApiKeysPage() {
             <div className="flex-1">
               <h3 className="font-semibold text-green-900">API Key Created Successfully!</h3>
               <p className="text-sm text-green-700 mt-1">
-                Make sure to copy your API key now. You won't be able to see it again!
+                Make sure to copy your API key now. You won&apos;t be able to see it again!
               </p>
               <div className="mt-3 flex items-center gap-2">
                 <code className="flex-1 bg-white border border-green-300 rounded px-3 py-2 text-sm font-mono">
